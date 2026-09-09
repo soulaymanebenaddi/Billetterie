@@ -1,0 +1,9 @@
+- consulter les événements
+- consulter les sièges
+- créer un compte
+- réserver un siège
+- expiration d'une réservation
+- payer
+- recevoir un billet
+- consulter ses billets
+- création d'événement côté organisateur
