@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Billetterie.Api/Billetterie.Api.csproj" />
+    <Project Path="src/Billetterie.Application/Billetterie.Application.csproj" />
+    <Project Path="src/Billetterie.Domain/Billetterie.Domain.csproj" />
+    <Project Path="src/Billetterie.Infrastructure/Billetterie.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Billetterie.IntegrationTests/Billetterie.IntegrationTests.csproj" />
+    <Project Path="tests/Billetterie.UnitTests/Billetterie.UnitTests.csproj" />
+  </Folder>
+</Solution>
