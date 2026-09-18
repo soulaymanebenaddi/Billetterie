@@ -1,8 +1,12 @@
+using Billetterie.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args); // création de l'objet builder qui permet de configurer l'application
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddControllers(); // notifier .net core qu'on veut utiliser des controllers
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
