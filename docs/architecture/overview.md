@@ -349,6 +349,7 @@ EventStatus
 Responsibilities:
 
 * venues;
+* venue space;
 * sections;
 * rows;
 * seats;
@@ -471,6 +472,26 @@ Billetterie.Domain/
 This structure may evolve as the domain becomes better understood.
 
 Folders should represent actual business concepts and not exist only to satisfy an architectural pattern.
+
+### Venue structure
+
+A `Venue` represents a physical location or complex.
+
+A `VenueSpace` represents a specific bookable or event-hosting space inside a venue, such as:
+- a theatre hall
+- an arena
+- an auditorium
+- a stage
+
+The seating hierarchy is:
+
+Venue
+→ VenueSpace
+→ Section
+→ Row
+→ Seat
+
+This allows the platform to support venues containing multiple halls or spaces.
 
 ---
 
