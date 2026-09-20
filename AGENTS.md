@@ -245,7 +245,7 @@ Do not prematurely introduce seating layouts, general admission models, or multi
 
 The system should preserve the following business rules.
 
-- A seat must not ultimately be sold twice for the same event.
+- A seat must not have more than one active reservation for the same event.
 - An expired reservation cannot be completed.
 - Seats associated with an expired or cancelled reservation should become available again unless they were sold.
 - A purchase is confirmed only after a successful payment.
@@ -378,7 +378,7 @@ Target: approximately 8–12 additional hours.
 
 Focus on:
 
-- robust prevention of double seat reservations;
+- hardening the existing active-reservation uniqueness guarantee;
 - PostgreSQL transactions;
 - appropriate concurrency-control mechanisms;
 - testing approximately 50–100 concurrent requests attempting to reserve the same seat;
@@ -601,7 +601,7 @@ dotnet test
 
 Frontend checks should also be run when frontend code is modified.
 
-Use the existing frontend scripts defined in `Billetterie.Web/package.json`.
+Use the existing frontend scripts defined in `src/Billetterie.Web/package.json`.
 
 Do not claim an issue is complete when the application fails to build or start because of changes introduced by that issue.
 
