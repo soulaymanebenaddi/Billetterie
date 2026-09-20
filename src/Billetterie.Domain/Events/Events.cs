@@ -14,12 +14,15 @@ public class Event
 
     public EventStatus Status { get; private set; }
 
+    public Guid VenueSpaceId { get; private set; }
+
     public Event(
         Guid id,
         string name,
         string? description,
         DateTimeOffset startsAt,
-        DateTimeOffset endsAt)
+        DateTimeOffset endsAt,
+        Guid venueSpaceId)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException(
@@ -30,12 +33,18 @@ public class Event
             throw new ArgumentException(
                 "Event end date must be after its start date.");
 
+        if (venueSpaceId == Guid.Empty)
+            throw new ArgumentException(
+                "Venue space ID cannot be empty.",
+                nameof(venueSpaceId));
+
         Id = id;
         Name = name;
         Description = description;
         StartsAt = startsAt;
         EndsAt = endsAt;
         Status = EventStatus.Draft;
+        VenueSpaceId = venueSpaceId;
     }
 
     public void Publish()
