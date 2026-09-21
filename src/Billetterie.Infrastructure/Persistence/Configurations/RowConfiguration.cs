@@ -10,6 +10,9 @@ public class RowConfiguration : IEntityTypeConfiguration<Row>
     {
         builder.HasKey(r => r.Id);
 
+        builder.HasIndex(r => new { r.SectionId, r.Name })
+            .IsUnique();
+
         builder.Property(r => r.Name)
             .IsRequired()
             .HasMaxLength(20);

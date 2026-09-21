@@ -10,6 +10,9 @@ public class SeatConfiguration : IEntityTypeConfiguration<Seat>
     {
         builder.HasKey(s => s.Id);
 
+        builder.HasIndex(s => new { s.RowId, s.Label })
+            .IsUnique();
+
         builder.Property(s => s.Label)
             .IsRequired()
             .HasMaxLength(20);

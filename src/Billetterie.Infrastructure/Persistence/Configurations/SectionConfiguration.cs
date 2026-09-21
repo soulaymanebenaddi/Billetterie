@@ -10,6 +10,9 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
     {
         builder.HasKey(s => s.Id);
 
+        builder.HasIndex(s => new { s.VenueSpaceId, s.Name })
+            .IsUnique();
+
         builder.Property(s => s.Name)
             .IsRequired()
             .HasMaxLength(100);

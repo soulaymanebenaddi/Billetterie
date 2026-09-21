@@ -10,6 +10,9 @@ public class VenueSpaceConfiguration : IEntityTypeConfiguration<VenueSpace>
     {
         builder.HasKey(v => v.Id);
 
+        builder.HasIndex(v => new { v.VenueId, v.Name })
+            .IsUnique();
+
         builder.Property(v => v.Name)
             .IsRequired()
             .HasMaxLength(200);
