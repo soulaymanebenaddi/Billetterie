@@ -31,6 +31,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.HasOne<VenueSpace>()
             .WithMany()
             .HasForeignKey(e => e.VenueSpaceId)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
     }
 }

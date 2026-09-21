@@ -20,6 +20,7 @@ public class RowConfiguration : IEntityTypeConfiguration<Row>
         builder.HasOne<Section>()
             .WithMany()
             .HasForeignKey(r => r.SectionId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
 }

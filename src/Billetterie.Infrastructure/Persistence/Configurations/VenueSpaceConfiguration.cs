@@ -20,6 +20,7 @@ public class VenueSpaceConfiguration : IEntityTypeConfiguration<VenueSpace>
         builder.HasOne<Venue>()
             .WithMany()
             .HasForeignKey(v => v.VenueId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
 }

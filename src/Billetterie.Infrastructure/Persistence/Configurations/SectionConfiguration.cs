@@ -20,6 +20,7 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
         builder.HasOne<VenueSpace>()
             .WithMany()
             .HasForeignKey(s => s.VenueSpaceId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
 }

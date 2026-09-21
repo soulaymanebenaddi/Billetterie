@@ -20,6 +20,7 @@ public class SeatConfiguration : IEntityTypeConfiguration<Seat>
         builder.HasOne<Row>()
             .WithMany()
             .HasForeignKey(s => s.RowId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
 }
