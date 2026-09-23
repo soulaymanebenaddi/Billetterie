@@ -40,9 +40,9 @@ public class Event
                 "Event name cannot be empty.",
                 nameof(name));
 
-        if (string.IsNullOrWhiteSpace(Category.ToString()))
+        if (!Enum.IsDefined(category))
             throw new ArgumentException(
-                "Event category cannot be empty.",
+                "Event category is invalid.",
                 nameof(category));
 
         if (name.Length > MaxNameLength)

@@ -14,8 +14,7 @@ namespace Billetterie.Infrastructure.Persistence.Migrations
                 name: "Category",
                 table: "Events",
                 type: "integer",
-                nullable: false,
-                defaultValue: 0);
+                nullable: false);
 
             migrationBuilder.AddColumn<string>(
                 name: "ImageUrl",

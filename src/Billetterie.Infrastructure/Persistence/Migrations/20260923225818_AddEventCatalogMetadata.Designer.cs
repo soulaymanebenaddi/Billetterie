@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Billetterie.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BilletterieDbContext))]
-    [Migration("20260923215846_AddEventCatalogMetadata")]
+    [Migration("20260923225818_AddEventCatalogMetadata")]
     partial class AddEventCatalogMetadata
     {
         /// <inheritdoc />
