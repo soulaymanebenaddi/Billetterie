@@ -24,6 +24,12 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.Property(e => e.Status)
             .IsRequired();
 
+        builder.Property(e => e.ImageUrl)
+            .IsRequired(false);
+
+        builder.Property(e => e.Category)
+            .IsRequired();
+
         builder.Property(e => e.Description)
             .IsRequired(false)
             .HasMaxLength(5000);

@@ -14,6 +14,10 @@ public class Event
 
     public EventStatus Status { get; private set; }
 
+    public string? ImageUrl { get; private set; }
+
+    public EventCategory Category { get; private set; }
+
     public Guid VenueSpaceId { get; private set; }
 
     public const int MaxNameLength = 200;
@@ -26,6 +30,8 @@ public class Event
         string? description,
         DateTimeOffset startsAt,
         DateTimeOffset endsAt,
+        string? imageUrl,
+        EventCategory category,
         Guid venueSpaceId)
     {
 
@@ -33,6 +39,11 @@ public class Event
             throw new ArgumentException(
                 "Event name cannot be empty.",
                 nameof(name));
+
+        if (string.IsNullOrWhiteSpace(Category.ToString()))
+            throw new ArgumentException(
+                "Event category cannot be empty.",
+                nameof(category));
 
         if (name.Length > MaxNameLength)
             throw new ArgumentException(
@@ -59,6 +70,8 @@ public class Event
         StartsAt = startsAt.ToUniversalTime();
         EndsAt = endsAt.ToUniversalTime();
         Status = EventStatus.Draft;
+        ImageUrl = imageUrl;
+        Category = category;
         VenueSpaceId = venueSpaceId;
     }
 
