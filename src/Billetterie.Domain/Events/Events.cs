@@ -14,28 +14,52 @@ public class Event
 
     public EventStatus Status { get; private set; }
 
+    public Guid VenueSpaceId { get; private set; }
+
+    public const int MaxNameLength = 200;
+
+    public const int MaxDescriptionLength = 5000;
+
     public Event(
         Guid id,
         string name,
         string? description,
         DateTimeOffset startsAt,
-        DateTimeOffset endsAt)
+        DateTimeOffset endsAt,
+        Guid venueSpaceId)
     {
+
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException(
                 "Event name cannot be empty.",
                 nameof(name));
 
+        if (name.Length > MaxNameLength)
+            throw new ArgumentException(
+                $"Event name cannot exceed {MaxNameLength} characters.",
+                nameof(name));
+
+        if (description != null && description.Length > MaxDescriptionLength)
+            throw new ArgumentException(
+                $"Event description cannot exceed {MaxDescriptionLength} characters.",
+                nameof(description));
+
         if (endsAt <= startsAt)
             throw new ArgumentException(
                 "Event end date must be after its start date.");
 
+        if (venueSpaceId == Guid.Empty)
+            throw new ArgumentException(
+                "Venue space ID cannot be empty.",
+                nameof(venueSpaceId));
+
         Id = id;
         Name = name;
         Description = description;
-        StartsAt = startsAt;
-        EndsAt = endsAt;
+        StartsAt = startsAt.ToUniversalTime();
+        EndsAt = endsAt.ToUniversalTime();
         Status = EventStatus.Draft;
+        VenueSpaceId = venueSpaceId;
     }
 
     public void Publish()

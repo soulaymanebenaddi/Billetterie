@@ -651,6 +651,24 @@ Critical business guarantees must not depend exclusively on frontend validation.
 
 Concurrency-sensitive behavior such as seat reservation will be researched and documented separately before implementation.
 
+### Venue structure deletion policy
+
+The venue structure uses cascade deletion for its composition hierarchy:
+
+```text
+Venue
+→ VenueSpace
+→ Section
+→ Row
+→ Seat
+```
+
+Deleting a parent in this hierarchy also deletes its dependent children. This reflects that a venue space cannot exist without its venue, a section without its venue space, a row without its section, or a seat without its row.
+
+The relationship from `Event` to `VenueSpace` uses restricted deletion. A venue space referenced by an event cannot be deleted, and this restriction also prevents deletion of an ancestor venue when one of its spaces is referenced by an event.
+
+Physical deletion of venues and seating structures must be restricted to administrators. Authorization must be enforced by the backend when deletion use cases and endpoints are introduced.
+
 ---
 
 ## 15. Authentication and Authorization
