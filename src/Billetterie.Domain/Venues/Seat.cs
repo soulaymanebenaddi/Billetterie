@@ -6,11 +6,18 @@ public class Seat
     public string Label { get; private set; }
     public Guid RowId { get; private set; }
 
+    public const int MaxLabelLength = 20;
+
     public Seat(Guid id, string label, Guid rowId)
     {
         if(string.IsNullOrWhiteSpace(label))
         {
             throw new ArgumentException("Label cannot be null or empty.", nameof(label));
+        }
+
+        if(label.Length > MaxLabelLength)
+        {
+            throw new ArgumentException($"Label cannot exceed {MaxLabelLength} characters.", nameof(label));
         }
 
         if(id == Guid.Empty)

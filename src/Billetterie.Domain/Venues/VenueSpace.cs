@@ -6,11 +6,18 @@ public class VenueSpace
     public string Name { get; private set; }
     public Guid VenueId { get; private set; }
 
+    public const int MaxNameLength = 200;
+
     public VenueSpace(Guid id, string name, Guid venueId)
     {
         if(string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+        }
+
+        if(name.Length > MaxNameLength)
+        {
+            throw new ArgumentException($"Name cannot exceed {MaxNameLength} characters.", nameof(name));
         }
 
         if(id == Guid.Empty)

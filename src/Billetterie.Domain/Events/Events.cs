@@ -16,6 +16,10 @@ public class Event
 
     public Guid VenueSpaceId { get; private set; }
 
+    public const int MaxNameLength = 200;
+
+    public const int MaxDescriptionLength = 5000;
+
     public Event(
         Guid id,
         string name,
@@ -24,10 +28,21 @@ public class Event
         DateTimeOffset endsAt,
         Guid venueSpaceId)
     {
+
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException(
                 "Event name cannot be empty.",
                 nameof(name));
+
+        if (name.Length > MaxNameLength)
+            throw new ArgumentException(
+                $"Event name cannot exceed {MaxNameLength} characters.",
+                nameof(name));
+
+        if (description != null && description.Length > MaxDescriptionLength)
+            throw new ArgumentException(
+                $"Event description cannot exceed {MaxDescriptionLength} characters.",
+                nameof(description));
 
         if (endsAt <= startsAt)
             throw new ArgumentException(
@@ -41,8 +56,8 @@ public class Event
         Id = id;
         Name = name;
         Description = description;
-        StartsAt = startsAt;
-        EndsAt = endsAt;
+        StartsAt = startsAt.ToUniversalTime();
+        EndsAt = endsAt.ToUniversalTime();
         Status = EventStatus.Draft;
         VenueSpaceId = venueSpaceId;
     }

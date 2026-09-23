@@ -6,11 +6,18 @@ public class Row
     public string Name { get; private set; }
     public Guid SectionId { get; private set; }
 
+    public const int MaxNameLength = 20;
+
     public Row(Guid id, string name, Guid sectionId)
     {
         if(string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+        }
+
+        if (name.Length > MaxNameLength)
+        {
+            throw new ArgumentException($"Name cannot exceed {MaxNameLength} characters.", nameof(name));
         }
 
         if(id == Guid.Empty)
