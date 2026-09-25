@@ -15,7 +15,7 @@ public class RowConfiguration : IEntityTypeConfiguration<Row>
 
         builder.Property(r => r.Name)
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(Row.MaxNameLength);
 
         builder.HasOne<Section>()
             .WithMany()

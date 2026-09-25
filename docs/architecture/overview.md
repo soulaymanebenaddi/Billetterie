@@ -529,6 +529,18 @@ A ticket that has already been successfully validated at an event entrance canno
 
 Customers may only purchase tickets for events that are currently available for sale.
 
+### INV-009 — Event section pricing consistency
+
+An event section price may only reference a section that belongs to the venue space associated with the event.
+
+For an `EventSectionPrice`, the following condition must hold:
+
+```text
+Section.VenueSpaceId == Event.VenueSpaceId
+```
+
+A section from another venue space must not be assigned a price for the event. This rule must be enforced by the backend when event section pricing creation and modification use cases are introduced.
+
 ---
 
 ## 10. Data Ownership and Source of Truth

@@ -13,7 +13,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.Name)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(Event.MaxNameLength);
 
         builder.Property(e => e.StartsAt)
             .IsRequired();
@@ -32,7 +32,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.Description)
             .IsRequired(false)
-            .HasMaxLength(5000);
+            .HasMaxLength(Event.MaxDescriptionLength);
 
         builder.HasOne<VenueSpace>()
             .WithMany()

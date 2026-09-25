@@ -15,7 +15,7 @@ public class VenueSpaceConfiguration : IEntityTypeConfiguration<VenueSpace>
 
         builder.Property(v => v.Name)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(VenueSpace.MaxNameLength);
 
         builder.HasOne<Venue>()
             .WithMany()

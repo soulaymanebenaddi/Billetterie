@@ -12,14 +12,14 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.Property(v => v.Name)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(Venue.MaxNameLength);
 
         builder.Property(v => v.Address)
             .IsRequired()
-            .HasMaxLength(300);
+            .HasMaxLength(Venue.MaxAddressLength);
 
         builder.Property(v => v.City)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(Venue.MaxCityLength);
     }
 }

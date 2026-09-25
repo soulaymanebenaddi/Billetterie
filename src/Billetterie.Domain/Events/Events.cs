@@ -59,6 +59,11 @@ public class Event
             throw new ArgumentException(
                 "Event end date must be after its start date.");
 
+        if (id == Guid.Empty)
+            throw new ArgumentException(
+                "Event ID cannot be empty.",
+                nameof(id));
+
         if (venueSpaceId == Guid.Empty)
             throw new ArgumentException(
                 "Venue space ID cannot be empty.",
