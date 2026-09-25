@@ -12,6 +12,12 @@ public class EventSectionPrice
 
     public string Currency { get; private set; }
 
+    public const int AmountPrecision = 18;
+
+    public const int AmountScale = 2;
+
+    public const decimal MaxAmount = 9_999_999_999_999_999.99m;
+
     public const int MaxCurrencyLength = 3;
 
     public EventSectionPrice(Guid id, Guid eventId, Guid sectionId, decimal amount, string currency)
@@ -20,6 +26,16 @@ public class EventSectionPrice
         if (amount < 0)
             throw new ArgumentException(
                 "Price amount cannot be negative.",
+                nameof(amount));
+
+        if (decimal.Round(amount, AmountScale) != amount)
+            throw new ArgumentException(
+                $"Price amount cannot have more than {AmountScale} decimal places.",
+                nameof(amount));
+
+        if (amount > MaxAmount)
+            throw new ArgumentException(
+                $"Price amount cannot exceed {MaxAmount}.",
                 nameof(amount));
 
         if (id == Guid.Empty)
