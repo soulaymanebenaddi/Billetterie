@@ -15,7 +15,7 @@ public class SeatConfiguration : IEntityTypeConfiguration<Seat>
 
         builder.Property(s => s.Label)
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(Seat.MaxLabelLength);
 
         builder.HasOne<Row>()
             .WithMany()

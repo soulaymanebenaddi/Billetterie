@@ -18,6 +18,8 @@ public class BilletterieDbContext : DbContext
 
     public DbSet<Seat> Seats => Set<Seat>();
 
+    public DbSet<EventSectionPrice> EventSectionPrices => Set<EventSectionPrice>();
+
     public BilletterieDbContext(
         DbContextOptions<BilletterieDbContext> options)
         : base(options)
