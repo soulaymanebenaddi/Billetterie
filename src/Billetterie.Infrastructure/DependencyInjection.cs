@@ -1,4 +1,5 @@
 using Billetterie.Infrastructure.Persistence;
+using Billetterie.Infrastructure.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,8 @@ public static class DependencyInjection
 
         services.AddDbContext<BilletterieDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        services.AddScoped<DevelopmentDataSeeder>();
 
         return services;
     }
