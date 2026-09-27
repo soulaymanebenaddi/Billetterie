@@ -10,6 +10,7 @@ public sealed class DevelopmentDataSeeder
 {
     private const string Currency = "CAD";
     private const string IdNamespace = "billetterie-development-seed";
+    private const string VenueTimeZoneId = "America/Toronto";
 
     private readonly BilletterieDbContext _dbContext;
 
@@ -177,16 +178,16 @@ public sealed class DevelopmentDataSeeder
             rowNames: ["A", "B", "C"],
             seatsPerRow: 6);
 
-        var dateAnchor = new DateTimeOffset(
-            currentTime.UtcDateTime.Date,
-            TimeSpan.Zero);
+        var venueTimeZone = TimeZoneInfo.FindSystemTimeZoneById(VenueTimeZoneId);
+        var currentVenueDate = DateOnly.FromDateTime(
+            TimeZoneInfo.ConvertTime(currentTime, venueTimeZone).DateTime);
 
         var concert = AddEvent(
             "nuit-electrique",
             "Nuit Électrique",
             "Une soirée de musique électronique réunissant plusieurs artistes canadiens.",
-            dateAnchor.AddDays(30).AddHours(20),
-            dateAnchor.AddDays(30).AddHours(23),
+            AtVenueTime(30, 20),
+            AtVenueTime(30, 23),
             "/images/events/nuit-electrique.webp",
             EventCategory.Concert,
             arenaMainFloor,
@@ -198,8 +199,8 @@ public sealed class DevelopmentDataSeeder
             "match-des-etoiles",
             "Match des Étoiles",
             "Un match amical opposant des joueurs invités de partout au Québec.",
-            dateAnchor.AddDays(45).AddHours(19),
-            dateAnchor.AddDays(45).AddHours(22),
+            AtVenueTime(45, 19),
+            AtVenueTime(45, 22),
             "/images/events/match-des-etoiles.webp",
             EventCategory.Sports,
             arenaMainFloor,
@@ -211,8 +212,8 @@ public sealed class DevelopmentDataSeeder
             "les-heritiers-du-temps",
             "Les Héritiers du Temps",
             "Une création théâtrale originale sur la mémoire et les liens familiaux.",
-            dateAnchor.AddDays(60).AddHours(19),
-            dateAnchor.AddDays(60).AddHours(21).AddMinutes(30),
+            AtVenueTime(60, 19, 30),
+            AtVenueTime(60, 22),
             "/images/events/les-heritiers-du-temps.webp",
             EventCategory.Theatre,
             theatreMainHall,
@@ -224,8 +225,8 @@ public sealed class DevelopmentDataSeeder
             "rires-en-ville",
             "Rires en Ville",
             "Une soirée d'humour mettant en vedette des talents émergents.",
-            dateAnchor.AddDays(75).AddHours(20),
-            dateAnchor.AddDays(75).AddHours(22),
+            AtVenueTime(75, 20),
+            AtVenueTime(75, 22),
             "/images/events/rires-en-ville.webp",
             EventCategory.Comedy,
             theatreMainHall,
@@ -237,8 +238,8 @@ public sealed class DevelopmentDataSeeder
             "sommet-innovation",
             "Sommet Innovation",
             "Une journée de conférences consacrée aux technologies et aux produits numériques.",
-            dateAnchor.AddDays(90).AddHours(9),
-            dateAnchor.AddDays(90).AddHours(17),
+            AtVenueTime(90, 8, 30),
+            AtVenueTime(90, 17),
             "/images/events/sommet-innovation.webp",
             EventCategory.Conference,
             auditorium,
@@ -254,6 +255,22 @@ public sealed class DevelopmentDataSeeder
             seats,
             events,
             eventSectionPrices);
+
+        DateTimeOffset AtVenueTime(
+            int daysFromNow,
+            int hour,
+            int minute = 0)
+        {
+            var localDateTime = currentVenueDate
+                .AddDays(daysFromNow)
+                .ToDateTime(
+                    new TimeOnly(hour, minute),
+                    DateTimeKind.Unspecified);
+
+            return new DateTimeOffset(
+                localDateTime,
+                venueTimeZone.GetUtcOffset(localDateTime));
+        }
 
         Venue AddVenue(string key, string name, string address, string city)
         {

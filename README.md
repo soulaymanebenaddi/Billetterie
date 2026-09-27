@@ -49,6 +49,8 @@ Les profils de lancement du projet utilisent l'environnement `Development`. Au d
 
 Le seed est idempotent : redémarrer l'API ne crée pas de doublons.
 
+Les dates des événements sont calculées lors de leur première insertion et ne sont pas décalées lors des redémarrages. Lorsque ces dates sont dépassées, réinitialiser la base avec la procédure ci-dessous permet de recréer des événements futurs.
+
 Les migrations et les données de démonstration ne sont pas appliquées automatiquement lorsque l'environnement n'est pas `Development`. En production, les migrations doivent faire partie du processus de déploiement.
 
 ## Réinitialiser les données de développement
