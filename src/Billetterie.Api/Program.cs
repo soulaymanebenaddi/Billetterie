@@ -1,4 +1,7 @@
 using Billetterie.Infrastructure;
+using Billetterie.Infrastructure.Persistence;
+using Billetterie.Infrastructure.Persistence.Seeding;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args); // création de l'objet builder qui permet de configurer l'application
 
@@ -16,6 +19,14 @@ app.MapControllers(); // routing : Prends les routes définies dans les controll
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<BilletterieDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<DevelopmentDataSeeder>();
+    await seeder.SeedAsync();
 }
 
 app.UseHttpsRedirection(); // redirige les requêtes HTTP vers HTTPS
