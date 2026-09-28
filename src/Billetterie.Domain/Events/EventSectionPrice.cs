@@ -1,3 +1,5 @@
+using Billetterie.Domain.Venues;
+
 namespace Billetterie.Domain.Events;
 
 public class EventSectionPrice
@@ -20,7 +22,25 @@ public class EventSectionPrice
 
     public const int MaxCurrencyLength = 3;
 
-    public EventSectionPrice(Guid id, Guid eventId, Guid sectionId, decimal amount, string currency)
+    public static EventSectionPrice Create(
+        Guid id,
+        Event @event,
+        Section section,
+        decimal amount,
+        string currency)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(section);
+
+        if (section.VenueSpaceId != @event.VenueSpaceId)
+            throw new ArgumentException(
+                "Section must belong to the venue space associated with the event.",
+                nameof(section));
+
+        return new EventSectionPrice(id, @event.Id, section.Id, amount, currency);
+    }
+
+    private EventSectionPrice(Guid id, Guid eventId, Guid sectionId, decimal amount, string currency)
     {
 
         if (amount < 0)
