@@ -1,6 +1,7 @@
 using Billetterie.Infrastructure;
 using Billetterie.Infrastructure.Persistence;
 using Billetterie.Infrastructure.Persistence.Seeding;
+using Billetterie.Application.Events.GetPublishedEvents;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args); // création de l'objet builder qui permet de configurer l'application
@@ -10,6 +11,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers(); // notifier .net core qu'on veut utiliser des controllers
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+builder.Services.AddScoped<GetPublishedEvents>();
 
 var app = builder.Build();
 

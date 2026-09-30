@@ -23,8 +23,6 @@ public sealed class DevelopmentDataSeeder
     {
         var seedData = CreateSeedData(DateTimeOffset.UtcNow);
 
-        ValidatePricingConsistency(seedData);
-
         await using var transaction =
             await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -358,31 +356,12 @@ public sealed class DevelopmentDataSeeder
 
         void AddPrice(Event @event, Section section, decimal amount)
         {
-            eventSectionPrices.Add(new EventSectionPrice(
+            eventSectionPrices.Add(EventSectionPrice.Create(
                 CreateId($"event-section-price:{@event.Id}:{section.Id}"),
-                @event.Id,
-                section.Id,
+                @event,
+                section,
                 amount,
                 Currency));
-        }
-    }
-
-    private static void ValidatePricingConsistency(SeedData seedData)
-    {
-        var eventsById = seedData.Events.ToDictionary(@event => @event.Id);
-        var sectionsById = seedData.Sections.ToDictionary(section => section.Id);
-
-        foreach (var price in seedData.EventSectionPrices)
-        {
-            var @event = eventsById[price.EventId];
-            var section = sectionsById[price.SectionId];
-
-            if (@event.VenueSpaceId != section.VenueSpaceId)
-            {
-                throw new InvalidOperationException(
-                    $"Section '{section.Id}' does not belong to the venue space " +
-                    $"of event '{@event.Id}'.");
-            }
         }
     }
 
