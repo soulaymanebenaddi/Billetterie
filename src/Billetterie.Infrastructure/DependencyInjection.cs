@@ -1,5 +1,7 @@
 using Billetterie.Infrastructure.Persistence;
 using Billetterie.Infrastructure.Persistence.Seeding;
+using Billetterie.Infrastructure.Persistence.Queries;
+using Billetterie.Application.Events.GetPublishedEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString));
 
         services.AddScoped<DevelopmentDataSeeder>();
+
+        services.AddScoped<IEventCatalogQuery, EventCatalogQuery>();
 
         return services;
     }
