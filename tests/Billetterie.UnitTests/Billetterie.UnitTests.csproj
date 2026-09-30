@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Billetterie.Application\Billetterie.Application.csproj" />
     <ProjectReference Include="..\..\src\Billetterie.Domain\Billetterie.Domain.csproj" />
   </ItemGroup>
 
