@@ -1,0 +1,137 @@
+.site-header__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  font-size: var(--font-size-small);
+}
+
+.site-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  text-decoration: none;
+}
+
+a.site-nav__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.site-nav__link[aria-disabled='true'] {
+  color: var(--color-text-on-dark-muted);
+  cursor: default;
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-min-height);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-brand__icon {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: var(--space-4);
+}
+
+.site-header__cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-min-height);
+  height: var(--control-min-height);
+  padding: var(--space-2);
+  border: 0;
+  color: inherit;
+  background: none;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.site-header__cart svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.site-header__account {
+  white-space: nowrap;
+}
+
+.site-header__account svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 64rem) {
+  .site-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .site-brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .site-header__actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 36rem) {
+  .site-brand {
+    font-size: 1.375rem;
+  }
+
+  .site-brand__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .site-header__actions {
+    gap: var(--space-2);
+  }
+
+  .site-header__account {
+    width: var(--control-min-height);
+    padding: var(--space-2);
+  }
+
+  .site-header__account-label {
+    display: none;
+  }
+
+  .site-nav {
+    gap: 0 var(--space-4);
+  }
+}

@@ -1,10 +1,13 @@
+import { Hero } from './components/home/Hero'
+import { SiteHeader } from './components/layout/SiteHeader'
 import './App.css'
 
 function App() {
   return (
-    <div className="app">
-      <main className="container app-content">
-        <h1>Billetterie</h1>
+    <div id="accueil" className="app">
+      <SiteHeader />
+      <main>
+        <Hero />
       </main>
     </div>
   )
