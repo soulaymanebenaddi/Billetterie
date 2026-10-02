@@ -1,0 +1,7 @@
+.app {
+  min-height: 100vh;
+}
+
+.app-content {
+  padding-block: var(--space-12);
+}
