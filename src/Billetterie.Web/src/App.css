@@ -2,15 +2,14 @@
   min-height: 100vh;
 }
 
+.event-catalog {
+  padding-bottom: var(--section-spacing);
+  background: linear-gradient(to bottom, var(--color-navy) 12rem, var(--color-surface) 12rem);
+}
+
 .event-catalog__status {
-  margin-top: var(--space-4);
-}
-
-.event-catalog__list {
-  margin-block: var(--space-4) 0;
-  padding-inline-start: var(--space-6);
-}
-
-.event-catalog__list li + li {
-  margin-top: var(--space-2);
+  padding: var(--space-6);
+  border: 1px solid var(--color-lavender-border);
+  border-radius: var(--radius-large);
+  background-color: var(--color-surface);
 }

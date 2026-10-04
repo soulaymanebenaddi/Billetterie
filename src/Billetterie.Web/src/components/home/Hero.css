@@ -1,5 +1,5 @@
 .hero {
-  padding-block: clamp(4rem, 6vw, 6rem) clamp(5rem, 10vw, 9rem);
+  padding-block: clamp(4rem, 6vw, 6rem) var(--space-8);
 }
 
 .hero__intro {
@@ -112,7 +112,7 @@
 
 @media (max-width: 36rem) {
   .hero {
-    padding-block: var(--space-12) var(--space-16);
+    padding-block: var(--space-12) var(--space-8);
   }
 
   .hero-search {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getEvents } from './api/events'
+import { EventGallery } from './components/events/EventGallery'
 import { Hero } from './components/home/Hero'
 import { SiteHeader } from './components/layout/SiteHeader'
 import type { EventListItemDto } from './types/events'
@@ -43,9 +44,9 @@ function App() {
       <SiteHeader />
       <main>
         <Hero />
-        <section className="section" aria-labelledby="events-title" aria-busy={isLoading}>
+        <section className="event-catalog" aria-labelledby="events-title" aria-busy={isLoading}>
           <div className="container">
-            <h2 id="events-title">Événements à venir</h2>
+            <h2 id="events-title" className="sr-only">Événements à venir</h2>
 
             {isLoading && (
               <p className="event-catalog__status text-muted" role="status">
@@ -63,12 +64,11 @@ function App() {
               </p>
             )}
 
-            {!isLoading && error === null && events.length > 0 && (
-              <ul className="event-catalog__list">
-                {events.map((event) => <li key={event.id}>{event.name}</li>)}
-              </ul>
-            )}
           </div>
+
+          {!isLoading && error === null && events.length > 0 && (
+            <EventGallery events={events} />
+          )}
         </section>
       </main>
     </div>
