@@ -1,5 +1,39 @@
 # React + TypeScript + Vite
 
+## Connexion à l'API en développement
+
+Depuis ce dossier (`src/Billetterie.Web`), créer la configuration locale :
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Le fichier `.env.local` est ignoré par Git. Les valeurs par défaut fonctionnent aussi sans ce fichier.
+
+- `VITE_API_BASE_URL=/api` définit la base des URL utilisées par le client HTTP.
+- `API_PROXY_TARGET=http://localhost:5091` définit la cible du proxy de développement Vite. Cette variable reste côté serveur Vite.
+- Les variables `VITE_` sont accessibles dans le navigateur et ne doivent contenir aucun secret.
+
+Démarrer l'API dans un premier terminal, depuis la racine du dépôt, avec PostgreSQL disponible et la chaîne de connexion configurée selon le README principal :
+
+```powershell
+dotnet run --project src/Billetterie.Api --launch-profile http
+```
+
+Démarrer le frontend dans un deuxième terminal, depuis `src/Billetterie.Web` :
+
+```powershell
+npm run dev
+```
+
+Vite transmet `/api/events` à `http://localhost:5091/api/events` sans supprimer le préfixe `/api`. L'API et Vite doivent tous les deux fonctionner. Redémarrer Vite après une modification de `.env.local`.
+
+Le client `src/api/events.ts` exporte `getEvents(signal?)`. Il utilise `fetch`, vérifie le statut HTTP et retourne les données JSON décrites par `EventListItemDto`. Les erreurs HTTP, réseau, JSON et les annulations sont transmises à l'appelant. Les types TypeScript ne valident pas automatiquement le contenu reçu.
+
+Le proxy ne s'applique pas au build de production ni à `vite preview`. En production, `/api` doit être routé vers le backend par l'hébergement, ou `VITE_API_BASE_URL` doit contenir l'adresse de l'API lors du build. Une API sur une autre origine nécessite une configuration CORS adaptée côté backend.
+
+## Référence du template Vite
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

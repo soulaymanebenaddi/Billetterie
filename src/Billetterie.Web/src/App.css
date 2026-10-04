@@ -1,3 +1,16 @@
 .app {
   min-height: 100vh;
 }
+
+.event-catalog__status {
+  margin-top: var(--space-4);
+}
+
+.event-catalog__list {
+  margin-block: var(--space-4) 0;
+  padding-inline-start: var(--space-6);
+}
+
+.event-catalog__list li + li {
+  margin-top: var(--space-2);
+}
