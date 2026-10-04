@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 type IconName = 'ticket' | 'cart' | 'user' | 'search' | 'calendar' | 'map-pin' | 'chevron-down'
+  | 'refresh' | 'alert-circle'
 
 type IconProps = {
   name: IconName
@@ -46,6 +47,13 @@ const iconPaths: Record<IconName, ReactNode> = {
     </>
   ),
   'chevron-down': <path d="m6 9 6 6 6-6" />,
+  refresh: <path d="M20 7a9 9 0 0 0-15-2L2 8m0-6v6h6M4 17a9 9 0 0 0 15 2l3-3m0 6v-6h-6" />,
+  'alert-circle': (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v6m0 4h.01" />
+    </>
+  ),
 }
 
 export function Icon({ name, className }: IconProps) {

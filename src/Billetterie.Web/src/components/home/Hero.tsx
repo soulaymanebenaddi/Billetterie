@@ -51,9 +51,6 @@ export function Hero() {
           </button>
         </form>
 
-        <p id="search-availability" className="hero__search-note">
-          La recherche sera bientôt disponible.
-        </p>
       </div>
     </section>
   )
