@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-type IconName = 'ticket' | 'cart' | 'user' | 'search' | 'calendar' | 'map-pin' | 'chevron-down'
-  | 'refresh' | 'alert-circle'
+export type IconName = 'ticket' | 'cart' | 'user' | 'search' | 'calendar' | 'map-pin' | 'chevron-down'
+  | 'refresh' | 'alert-circle' | 'seat' | 'credit-card' | 'download' | 'arrow-right'
 
 type IconProps = {
   name: IconName
@@ -54,6 +54,20 @@ const iconPaths: Record<IconName, ReactNode> = {
       <path d="M12 7v6m0 4h.01" />
     </>
   ),
+  seat: (
+    <>
+      <rect x="6" y="3" width="12" height="11" rx="3" />
+      <path d="M3 10v7h18v-7M6 17v4m12-4v4M6 14h12" />
+    </>
+  ),
+  'credit-card': (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="3" />
+      <path d="M2 9h20M6 15h4m4 0h4" />
+    </>
+  ),
+  download: <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />,
+  'arrow-right': <path d="M4 12h16m-6-6 6 6-6 6" />,
 }
 
 export function Icon({ name, className }: IconProps) {

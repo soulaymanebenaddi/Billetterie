@@ -9,14 +9,12 @@ export function SiteHeader() {
           <a className="site-nav__link" href="/" aria-current="page">
             Accueil
           </a>
-          <span className="site-nav__link" aria-disabled="true" title="Bientôt disponible">
+          <a className="site-nav__link" href="#evenements">
             Événements
-            <span className="sr-only"> — bientôt disponible</span>
-          </span>
-          <span className="site-nav__link" aria-disabled="true" title="Bientôt disponible">
+          </a>
+          <a className="site-nav__link" href="#comment-ca-marche">
             Comment ça marche
-            <span className="sr-only"> — bientôt disponible</span>
-          </span>
+          </a>
         </nav>
 
         <a className="site-brand" href="/" aria-label="Billetterie — Accueil">

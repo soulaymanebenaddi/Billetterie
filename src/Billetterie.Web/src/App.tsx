@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { getEvents } from './api/events'
 import { EventGallery } from './components/events/EventGallery'
 import { Hero } from './components/home/Hero'
+import { Benefits } from './components/home/Benefits'
+import { PurchaseSteps } from './components/home/PurchaseSteps'
 import { SiteHeader } from './components/layout/SiteHeader'
 import { Icon } from './components/ui/Icon'
 import type { EventListItemDto, EventSearchFilters } from './types/events'
@@ -81,9 +83,11 @@ function App() {
           onReset={resetFilters}
         />
         <section
+          id="evenements"
           className={`event-catalog${showStatus ? ' event-catalog--status' : ''}`}
           aria-labelledby="events-title"
           aria-busy={isLoading}
+          tabIndex={-1}
         >
           <div className="container">
             <h2 id="events-title" className="sr-only">Événements à venir</h2>
@@ -168,6 +172,8 @@ function App() {
             </>
           )}
         </section>
+        <Benefits />
+        <PurchaseSteps />
       </main>
     </div>
   )
