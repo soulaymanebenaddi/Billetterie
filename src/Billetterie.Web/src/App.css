@@ -7,6 +7,14 @@
   background: linear-gradient(to bottom, var(--color-navy) 12rem, var(--color-surface) 12rem);
 }
 
+.event-catalog--status {
+  background: var(--color-navy);
+}
+
+.event-catalog--status .event-catalog__status-description {
+  color: var(--color-text-on-dark-muted);
+}
+
 .event-catalog__status {
   display: flex;
   flex-direction: column;

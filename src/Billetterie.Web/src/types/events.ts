@@ -18,3 +18,9 @@ export type EventListItemDto = {
   startingPrice: number | null
   currency: string | null
 }
+
+export type EventSearchFilters = {
+  name: string
+  date: string
+  city: string
+}
