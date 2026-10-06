@@ -69,3 +69,29 @@ dotnet run --project src/Billetterie.Api
 ```
 
 Les migrations et le seed recréeront automatiquement la structure et les données de développement.
+
+## Base PostgreSQL des tests d'intégration
+
+Les tests utilisent le même serveur PostgreSQL local que le développement, mais une base distincte nommée `billetterie_tests`.
+
+Après avoir démarré PostgreSQL avec `docker compose up -d postgres`, définir la connexion dans le terminal qui lancera les tests :
+
+```powershell
+$env:BILLETTERIE_TEST_CONNECTION_STRING = "Host=localhost;Port=5434;Database=billetterie_tests;Username=billetterie_app;Password=change-me"
+dotnet test tests/Billetterie.IntegrationTests
+```
+
+Adapter l'utilisateur et le mot de passe aux valeurs locales de `.env`. La variable d'environnement reste locale au terminal et n'est pas enregistrée dans Git. L'utilisateur PostgreSQL doit pouvoir créer la base si elle n'existe pas ; celui créé par le conteneur local dispose de ce droit.
+
+`TestDatabaseFixture` crée la base si nécessaire et applique les migrations existantes au début de la collection de tests. Son constructeur refuse toute connexion dont la base n'est pas `billetterie_tests`.
+
+`GetEventsTests` utilise la collection `PostgreSqlCollection.Name` et appelle `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
+
+Les quatre scénarios appellent `GET /api/events` avec la vraie requête PostgreSQL et vérifient :
+
+- un catalogue vide renvoie HTTP `200` et une liste JSON `[]`;
+- seuls les événements publiés et strictement futurs sont retournés, dans l'ordre chronologique;
+- les champs JSON et le prix minimal des sections sont corrects, y compris un prix de zéro;
+- un événement sans tarif reste présent avec `startingPrice` et `currency` à `null`.
+
+La commande `dotnet test` initialise la collection et exécute ces scénarios avec PostgreSQL.
