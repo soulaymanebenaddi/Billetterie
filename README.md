@@ -69,3 +69,22 @@ dotnet run --project src/Billetterie.Api
 ```
 
 Les migrations et le seed recréeront automatiquement la structure et les données de développement.
+
+## Base PostgreSQL des tests d'intégration
+
+Les tests utilisent le même serveur PostgreSQL local que le développement, mais une base distincte nommée `billetterie_tests`.
+
+Après avoir démarré PostgreSQL avec `docker compose up -d postgres`, définir la connexion dans le terminal qui lancera les tests :
+
+```powershell
+$env:BILLETTERIE_TEST_CONNECTION_STRING = "Host=localhost;Port=5434;Database=billetterie_tests;Username=billetterie_app;Password=change-me"
+dotnet test tests/Billetterie.IntegrationTests
+```
+
+Adapter l'utilisateur et le mot de passe aux valeurs locales de `.env`. La variable d'environnement reste locale au terminal et n'est pas enregistrée dans Git. L'utilisateur PostgreSQL doit pouvoir créer la base si elle n'existe pas ; celui créé par le conteneur local dispose de ce droit.
+
+`TestDatabaseFixture` crée la base si nécessaire et applique les migrations existantes au début de la collection de tests. Son constructeur refuse toute connexion dont la base n'est pas `billetterie_tests`.
+
+Les futures classes de tests utiliseront la collection `PostgreSqlCollection.Name` et appelleront `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
+
+À ce stade, la préparation est disponible mais aucun scénario d'intégration n'est encore ajouté : `dotnet test` ne déclenche donc pas encore l'initialisation de cette collection.
