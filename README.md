@@ -85,6 +85,6 @@ Adapter l'utilisateur et le mot de passe aux valeurs locales de `.env`. La varia
 
 `TestDatabaseFixture` crée la base si nécessaire et applique les migrations existantes au début de la collection de tests. Son constructeur refuse toute connexion dont la base n'est pas `billetterie_tests`.
 
-Les futures classes de tests utiliseront la collection `PostgreSqlCollection.Name` et appelleront `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
+`GetEventsTests` utilise la collection `PostgreSqlCollection.Name` et appelle `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
 
-À ce stade, la préparation est disponible mais aucun scénario d'intégration n'est encore ajouté : `dotnet test` ne déclenche donc pas encore l'initialisation de cette collection.
+Le premier scénario vérifie qu'un catalogue vide renvoie HTTP `200` et une liste JSON `[]` via `GET /api/events`. La commande `dotnet test` initialise désormais la collection et exécute ce scénario avec PostgreSQL.
