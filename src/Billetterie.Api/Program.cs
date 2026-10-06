@@ -36,3 +36,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection(); // redirige les requêtes HTTP vers HTTPS
 
 app.Run();
+
+// Rend le point d'entrée accessible à WebApplicationFactory dans les tests.
+public partial class Program { }
