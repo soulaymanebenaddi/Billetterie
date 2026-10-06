@@ -87,4 +87,11 @@ Adapter l'utilisateur et le mot de passe aux valeurs locales de `.env`. La varia
 
 `GetEventsTests` utilise la collection `PostgreSqlCollection.Name` et appelle `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
 
-Le premier scénario vérifie qu'un catalogue vide renvoie HTTP `200` et une liste JSON `[]` via `GET /api/events`. La commande `dotnet test` initialise désormais la collection et exécute ce scénario avec PostgreSQL.
+Les quatre scénarios appellent `GET /api/events` avec la vraie requête PostgreSQL et vérifient :
+
+- un catalogue vide renvoie HTTP `200` et une liste JSON `[]`;
+- seuls les événements publiés et strictement futurs sont retournés, dans l'ordre chronologique;
+- les champs JSON et le prix minimal des sections sont corrects, y compris un prix de zéro;
+- un événement sans tarif reste présent avec `startingPrice` et `currency` à `null`.
+
+La commande `dotnet test` initialise la collection et exécute ces scénarios avec PostgreSQL.
