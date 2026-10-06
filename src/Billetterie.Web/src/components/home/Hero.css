@@ -1,0 +1,203 @@
+.hero {
+  padding-block: clamp(4rem, 6vw, 6rem) var(--space-8);
+}
+
+.hero__intro {
+  text-align: center;
+}
+
+.hero__title {
+  font-weight: var(--font-weight-regular);
+  text-wrap: balance;
+}
+
+.hero__subtitle {
+  margin-top: var(--space-2);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  color: var(--color-text-on-dark-muted);
+  text-wrap: balance;
+}
+
+.hero-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)) auto;
+  align-items: stretch;
+  gap: var(--space-3);
+  max-width: 64rem;
+  margin-inline: auto;
+  margin-top: var(--space-16);
+}
+
+.hero-search__field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: 3.5rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-lavender-border);
+  border-radius: var(--radius-medium);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  color-scheme: light;
+}
+
+.hero-search__field > svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.hero-search__field input,
+.hero-search__field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-small);
+  color: var(--color-text);
+  background: transparent;
+  font-size: var(--font-size-small);
+}
+
+.hero-search__field input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.hero-search__field:has(:focus-visible) {
+  outline: 3px solid var(--color-lavender-border);
+  outline-offset: 3px;
+}
+
+.hero-search__field input:focus-visible,
+.hero-search__field select:focus-visible {
+  outline: none;
+}
+
+.hero-search__field--city {
+  position: relative;
+  padding: 0;
+}
+
+.hero-search__field--city select {
+  padding: var(--space-3) 3rem;
+  border-radius: var(--radius-medium);
+  appearance: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.hero-search__field--city select:disabled {
+  color: var(--color-text-muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.hero-search__field--city > svg {
+  position: absolute;
+  left: var(--space-4);
+  pointer-events: none;
+}
+
+.hero-search__field--city > .hero-search__chevron {
+  left: auto;
+  right: var(--space-4);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Enhance the native picker where supported; keep the standard select elsewhere. */
+@supports (appearance: base-select) {
+  #event-city,
+  #event-city::picker(select) {
+    appearance: base-select;
+  }
+
+  #event-city::picker-icon {
+    display: none;
+  }
+
+  #event-city::picker(select) {
+    top: calc(anchor(bottom) + var(--space-2));
+    left: anchor(left);
+    width: anchor-size(width);
+    max-height: min(15rem, 50vh);
+    margin: 0;
+    padding: var(--space-2);
+    overflow-y: auto;
+    border: 1px solid var(--color-lavender-border);
+    border-radius: var(--radius-medium);
+    color: var(--color-text);
+    background: var(--color-surface);
+    box-shadow: 0 0.75rem 2rem rgb(16 16 51 / 20%);
+  }
+
+  #event-city option {
+    min-height: var(--control-min-height);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-small);
+    font-size: var(--font-size-small);
+    cursor: pointer;
+  }
+
+  #event-city option::checkmark {
+    display: none;
+  }
+
+  #event-city option:is(:hover, :focus, :checked) {
+    color: var(--color-text-accent);
+    background: var(--color-lavender);
+  }
+
+  .hero-search__field--city:has(select:open) .hero-search__chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.hero-search__reset {
+  position: relative;
+  grid-column: 1 / -1;
+  justify-self: end;
+  min-height: 2rem;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-small);
+  font-size: 0.75rem;
+}
+
+/* Keep a 44px hit area around the visually smaller reset button. */
+.hero-search__reset::before {
+  position: absolute;
+  inset: -0.375rem 0;
+  content: '';
+}
+
+.hero-search__reset svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+@media (max-width: 60rem) {
+  .hero-search {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 40rem;
+    margin-top: var(--space-12);
+  }
+
+  .hero-search__field:first-child,
+  .hero-search__submit {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 36rem) {
+  .hero {
+    padding-block: var(--space-12) var(--space-8);
+  }
+
+  .hero-search {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: var(--space-8);
+  }
+}

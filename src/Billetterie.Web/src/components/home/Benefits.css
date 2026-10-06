@@ -1,0 +1,72 @@
+.benefits__intro {
+  display: grid;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.benefits__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-8);
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.benefits__item p {
+  max-width: 16rem;
+  font-size: var(--font-size-small);
+  text-wrap: pretty;
+}
+
+.benefits__visual {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: var(--space-2);
+  border-radius: 1.5rem 2rem 1.5rem 2.5rem;
+  color: var(--color-primary);
+  background: var(--color-lavender);
+}
+
+.benefits__visual svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.benefits__visual--seat {
+  color: #087887;
+  background: #e2f5f7;
+}
+
+.benefits__visual--credit-card {
+  color: #a63b65;
+  background: #fce8ee;
+}
+
+.benefits__visual--ticket {
+  color: #95600c;
+  background: #fff1d5;
+}
+
+@media (max-width: 60rem) {
+  .benefits__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-12);
+  }
+}
+
+@media (max-width: 36rem) {
+  .benefits__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

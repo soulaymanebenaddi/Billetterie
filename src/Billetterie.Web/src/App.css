@@ -1,0 +1,62 @@
+.app {
+  min-height: 100vh;
+}
+
+.event-catalog {
+  padding-bottom: var(--section-spacing);
+  background: linear-gradient(to bottom, var(--color-navy) 12rem, var(--color-surface) 12rem);
+}
+
+.event-catalog--status {
+  background: var(--color-navy);
+}
+
+.event-catalog--status .event-catalog__status-description {
+  color: var(--color-text-on-dark-muted);
+}
+
+.event-catalog__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  min-height: 10rem;
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+.event-catalog__status-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-on-dark);
+}
+
+.event-catalog__status-icon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-medium);
+  color: var(--color-text-accent);
+  background-color: var(--color-lavender);
+}
+
+.event-catalog__status-description {
+  max-width: 22rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  text-wrap: pretty;
+}
+
+.event-catalog__status-action {
+  border-color: var(--color-lavender-border);
+}
+
+.event-catalog__status-action svg {
+  width: 1rem;
+  height: 1rem;
+}
