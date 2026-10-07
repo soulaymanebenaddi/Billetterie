@@ -2,6 +2,7 @@ using Billetterie.Infrastructure;
 using Billetterie.Infrastructure.Persistence;
 using Billetterie.Infrastructure.Persistence.Seeding;
 using Billetterie.Application.Events.GetPublishedEvents;
+using Billetterie.Application.Events.GetEventDetails;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args); // création de l'objet builder qui permet de configurer l'application
@@ -14,6 +15,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 builder.Services.AddScoped<GetPublishedEvents>();
+builder.Services.AddScoped<GetEventDetails>();
 
 var app = builder.Build();
 
