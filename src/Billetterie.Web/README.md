@@ -1,5 +1,15 @@
 # React + TypeScript + Vite
 
+## Routage
+
+React Router utilise `BrowserRouter` pour les routes `/` (accueil) et `/events/:id`
+(page de détails provisoire, sans chargement de données). Les URL inconnues affichent
+« Page introuvable ». Les boutons des cartes restent désactivés à cette étape.
+
+En production, l'hébergement doit servir `index.html` pour les routes frontend
+afin de permettre l'accès direct et l'actualisation de `/events/:id`. Les requêtes
+`/api` doivent continuer à être dirigées vers le backend.
+
 ## Connexion à l'API en développement
 
 Depuis ce dossier (`src/Billetterie.Web`), créer la configuration locale :
