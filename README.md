@@ -85,7 +85,7 @@ Adapter l'utilisateur et le mot de passe aux valeurs locales de `.env`. La varia
 
 `TestDatabaseFixture` crée la base si nécessaire et applique les migrations existantes au début de la collection de tests. Son constructeur refuse toute connexion dont la base n'est pas `billetterie_tests`.
 
-`GetEventsTests` utilise la collection `PostgreSqlCollection.Name` et appelle `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
+`GetEventsTests` et `GetEventDetailsTests` utilisent la collection `PostgreSqlCollection.Name` et appellent `ResetAsync()` avant chaque scénario. Cette méthode vide les sept tables métier actuelles, en conservant le schéma et l'historique des migrations. La collection désactive l'exécution simultanée de ses tests. Lancer une seule exécution de ces tests à la fois sur cette base locale.
 
 Les quatre scénarios appellent `GET /api/events` avec la vraie requête PostgreSQL et vérifient :
 
@@ -94,4 +94,19 @@ Les quatre scénarios appellent `GET /api/events` avec la vraie requête Postgre
 - les champs JSON et le prix minimal des sections sont corrects, y compris un prix de zéro;
 - un événement sans tarif reste présent avec `startingPrice` et `currency` à `null`.
 
-La commande `dotnet test` initialise la collection et exécute ces scénarios avec PostgreSQL.
+Les tests de `GET /api/events/{id}` vérifient également :
+
+- HTTP `200` avec un objet JSON contenant les détails du bon événement, de son lieu et de sa salle ;
+- le tarif minimal et la devise de ce même tarif, y compris un prix de zéro, sans utiliser les tarifs d'un autre événement ;
+- HTTP `404` pour un identifiant inconnu ou vide, un événement brouillon ou annulé ;
+- les événements publiés démarrant à l'heure courante, déjà commencés ou terminés restent consultables par leur identifiant, contrairement au catalogue limité aux événements futurs ;
+- les champs `description`, `imageUrl`, `startingPrice` et `currency` restent à `null` lorsqu'ils sont absents ;
+- HTTP `400` pour un identifiant mal formé.
+
+Pour lancer uniquement les tests de détails après avoir configuré la connexion :
+
+```powershell
+dotnet test tests/Billetterie.IntegrationTests --filter FullyQualifiedName~GetEventDetailsTests
+```
+
+La commande `dotnet test` initialise la collection et exécute tous ces scénarios avec PostgreSQL.

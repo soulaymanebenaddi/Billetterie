@@ -1,3 +1,15 @@
-@Billetterie.Api_HostAddress = http://localhost:5091
+@ApiHostAddress = http://localhost:5091
 
-###
+# Identifiant de « Nuit Électrique » dans les données de démonstration.
+# Remplacer par un identifiant retourné par le catalogue si ces données ne sont pas présentes.
+@EventId = b738b1e0-61b7-7635-d2a2-46a2433e96b3
+
+### Consulter le catalogue des événements publiés à venir
+GET {{ApiHostAddress}}/api/events
+Accept: application/json
+
+### Consulter les détails d'un événement publié (HTTP 200, même s'il est passé)
+# Un identifiant inconnu ou un événement brouillon/annulé retourne HTTP 404.
+# Un identifiant mal formé retourne HTTP 400.
+GET {{ApiHostAddress}}/api/events/{{EventId}}
+Accept: application/json
