@@ -1,5 +1,24 @@
 # React + TypeScript + Vite
 
+## Routage
+
+React Router utilise `BrowserRouter` pour les routes `/` (accueil) et `/events/:id`
+(détails publics d'un événement). Les cartes du catalogue ouvrent la page de détails.
+Les URL inconnues affichent « Page introuvable ».
+
+La page charge `GET /api/events/{id}` avec annulation de la requête lors d'un changement
+d'événement ou d'un départ de la page. Elle affiche l'image, la catégorie, les dates et
+horaires, le lieu et sa salle, l'adresse, le tarif minimal et la description lorsqu'elle
+existe. Les images absentes ou invalides ont un affichage de remplacement.
+
+Un `404` affiche un événement introuvable, un `400` un lien invalide. Les erreurs réseau
+ou serveur proposent de réessayer. Le parcours en trois étapes est informatif :
+la sélection des sièges, le paiement et les billets ne sont pas implémentés ici.
+
+En production, l'hébergement doit servir `index.html` pour les routes frontend
+afin de permettre l'accès direct et l'actualisation de `/events/:id`. Les requêtes
+`/api` doivent continuer à être dirigées vers le backend.
+
 ## Connexion à l'API en développement
 
 Depuis ce dossier (`src/Billetterie.Web`), créer la configuration locale :
@@ -28,14 +47,18 @@ npm run dev
 
 Vite transmet `/api/events` à `http://localhost:5091/api/events` sans supprimer le préfixe `/api`. L'API et Vite doivent tous les deux fonctionner. Redémarrer Vite après une modification de `.env.local`.
 
-Le client `src/api/events.ts` exporte `getEvents(signal?)`. Il utilise `fetch`, vérifie le statut HTTP et retourne les données JSON décrites par `EventListItemDto`. Les erreurs HTTP, réseau, JSON et les annulations sont transmises à l'appelant. Les types TypeScript ne valident pas automatiquement le contenu reçu.
+Le client `src/api/events.ts` exporte `getEvents(signal?)` et `getEventDetails(id, signal?)`.
+Il utilise `fetch`, vérifie le statut HTTP et retourne les données JSON décrites par
+`EventListItemDto` et `EventDetailsDto`. Pour les détails, `ApiError.status` permet de
+distinguer les erreurs HTTP. Les erreurs réseau, JSON et les annulations sont transmises
+à l'appelant. Les types TypeScript ne valident pas automatiquement le contenu reçu.
 
 Le proxy ne s'applique pas au build de production ni à `vite preview`. En production, `/api` doit être routé vers le backend par l'hébergement, ou `VITE_API_BASE_URL` doit contenir l'adresse de l'API lors du build. Une API sur une autre origine nécessite une configuration CORS adaptée côté backend.
 
 ## Convention de date pour le MVP
 
 Les lieux actuellement proposés à Montréal et à Québec utilisent le fuseau `America/Toronto`.
-Les dates affichées sur les cartes et le filtre de recherche par date utilisent donc explicitement
+Les dates et horaires des détails, les dates des cartes et le filtre de recherche utilisent donc explicitement
 ce fuseau, quel que soit le fuseau du navigateur du visiteur. La locale `fr-CA` définit la présentation
 du texte. Les instants reçus de l'API restent en UTC et ne sont pas modifiés.
 
@@ -45,7 +68,7 @@ il faudra transmettre le fuseau de chaque lieu dans l'API plutôt que conserver 
 
 Les tests de dates et du filtrage s'exécutent avec `npm test`, sans dépendance supplémentaire.
 Ils vérifient le même jour d'événement avec des visiteurs en UTC, à Toronto, à Paris et à Tokyo,
-ainsi que des dates en hiver et en été et le cas d'une date invalide.
+ainsi que les horaires en hiver et en été, le passage de minuit et le cas d'une date invalide.
 
 ## Référence du template Vite
 
