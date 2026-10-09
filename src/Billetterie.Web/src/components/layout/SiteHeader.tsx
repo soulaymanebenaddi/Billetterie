@@ -1,26 +1,29 @@
+import { Link, useLocation } from 'react-router'
 import { Icon } from '../ui/Icon'
 import './SiteHeader.css'
 
 export function SiteHeader() {
+  const isHome = useLocation().pathname === '/'
+
   return (
     <header className="site-header section--dark">
       <div className="container site-header__inner">
         <nav className="site-nav" aria-label="Navigation principale">
-          <a className="site-nav__link" href="/" aria-current="page">
+          <Link className="site-nav__link" to="/" aria-current={isHome ? 'page' : undefined}>
             Accueil
-          </a>
-          <a className="site-nav__link" href="#evenements">
+          </Link>
+          <a className="site-nav__link" href={isHome ? '#evenements' : '/#evenements'}>
             Événements
           </a>
-          <a className="site-nav__link" href="#comment-ca-marche">
+          <a className="site-nav__link" href={isHome ? '#comment-ca-marche' : '/#comment-ca-marche'}>
             Comment ça marche
           </a>
         </nav>
 
-        <a className="site-brand" href="/" aria-label="Billetterie — Accueil">
+        <Link className="site-brand" to="/" aria-label="Billetterie — Accueil">
           <Icon name="ticket" className="site-brand__icon" />
           <span>Billetterie</span>
-        </a>
+        </Link>
 
         <div className="site-header__actions">
           <button

@@ -15,6 +15,18 @@ const eventDateKeyFormatter = new Intl.DateTimeFormat('fr-CA', {
   day: '2-digit',
 })
 
+const eventTimeFormatter = new Intl.DateTimeFormat('fr-CA', {
+  timeZone: eventTimeZone,
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+
+export function formatEventTime(value: string): string {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? 'Heure à confirmer' : eventTimeFormatter.format(date)
+}
+
 export function formatEventDate(startsAt: string): string {
   const date = new Date(startsAt)
 

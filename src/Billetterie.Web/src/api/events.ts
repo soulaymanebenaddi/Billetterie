@@ -19,7 +19,7 @@ export async function getEvents(signal?: AbortSignal): Promise<EventListItemDto[
 }
 
 export async function getEventDetails(eventId: string, signal?: AbortSignal): Promise<EventDetailsDto> {
-  const response = await fetch(`${apiBaseUrl}/events/${eventId}`, {
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
     headers: { Accept: 'application/json' },
     signal,
   })

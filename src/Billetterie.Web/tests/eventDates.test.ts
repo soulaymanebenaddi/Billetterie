@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { filterEvents } from '../src/utils/eventFilters.ts'
-import { formatEventDate, getEventDateKey } from '../src/utils/formatters.ts'
+import { formatEventDate, formatEventTime, getEventDateKey } from '../src/utils/formatters.ts'
 import type { EventListItemDto } from '../src/types/events.ts'
 
 const dateCases = [
@@ -13,6 +13,7 @@ const dateCases = [
     eventDay: '2026-01-15',
     otherDay: '2026-01-16',
     label: '15 janv. 2026',
+    timeLabel: '21 h 30',
   },
   {
     // July 16 at 00:30: daylight saving time must use UTC-4, not a fixed UTC-5.
@@ -20,6 +21,7 @@ const dateCases = [
     eventDay: '2026-07-16',
     otherDay: '2026-07-15',
     label: '16 juill. 2026',
+    timeLabel: '00 h 30',
   },
 ]
 
@@ -56,6 +58,7 @@ for (const dateCase of dateCases) {
     }
 
     assert.equal(formatEventDate(event.startsAt), dateCase.label)
+    assert.equal(formatEventTime(event.startsAt), dateCase.timeLabel)
     assert.equal(getEventDateKey(event.startsAt), dateCase.eventDay)
     assert.deepEqual(filterEvents([event], { name: '', city: '', date: dateCase.eventDay }), [event])
     assert.deepEqual(filterEvents([event], { name: '', city: '', date: dateCase.otherDay }), [])
@@ -64,5 +67,6 @@ for (const dateCase of dateCases) {
 
 test('Invalid dates preserve the display fallback and do not produce a search date', () => {
   assert.equal(formatEventDate('invalid-date'), 'Date à confirmer')
+  assert.equal(formatEventTime('invalid-date'), 'Heure à confirmer')
   assert.equal(getEventDateKey('invalid-date'), '')
 })

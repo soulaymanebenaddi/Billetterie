@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import type { EventListItemDto } from '../../types/events'
 import { formatEventDate, formatStartingPrice } from '../../utils/formatters'
 import { Icon } from '../ui/Icon'
@@ -44,15 +45,13 @@ export function EventCard({ event }: EventCardProps) {
         </p>
       </div>
 
-      <button
+      <Link
         className="button button--secondary event-card__button"
-        type="button"
-        title="La page de détails sera bientôt disponible"
-        disabled
+        to={`/events/${event.id}`}
+        aria-label={`Voir l’événement ${event.name}`}
       >
         Voir l’événement
-        <span className="sr-only"> — bientôt disponible</span>
-      </button>
+      </Link>
     </article>
   )
 }
