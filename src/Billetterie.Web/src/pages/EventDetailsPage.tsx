@@ -172,13 +172,11 @@ function EventDetailsContent({ eventId }: { eventId: string }) {
         </section>
       </div>
 
-      {description && (
         <section className="event-details__description" aria-labelledby="event-description-title">
           <h2 id="event-description-title">À propos de l’événement</h2>
           <p> <strong>Catégorie :</strong> {categoryLabels[event.category]}</p>
-          <p>{description}</p>
+          {description && <p>{description}</p>}
         </section>
-      )}
     </article>
   )
 }
