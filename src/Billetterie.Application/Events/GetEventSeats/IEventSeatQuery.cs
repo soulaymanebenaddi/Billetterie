@@ -12,6 +12,8 @@ public interface IEventSeatQuery
     /// cancelled, or an empty collection when the published event has no seats.
     /// </returns>
     /// <remarks>
+    /// Publication and seats are read together in one SQL statement, so null versus
+    /// an empty collection is determined from the same database snapshot.
     /// Seats without a section price for this event have null Price and Currency;
     /// a configured free price remains zero. IsAvailable is temporarily always true
     /// until reservations and purchases are implemented, and does not guarantee

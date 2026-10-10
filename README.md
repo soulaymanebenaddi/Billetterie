@@ -120,12 +120,13 @@ Son contrat est le suivant :
 - un événement publié retourne les sièges de sa salle, quelle que soit sa date, y compris lorsqu'il commence à l'heure courante, a déjà commencé ou est terminé ;
 - un identifiant inconnu ou vide, un événement `Draft` ou `Cancelled` retourne `null` ;
 - un événement publié dont la salle ne contient aucun siège retourne une liste vide ;
+- le statut de publication et les sièges sont lus dans une seule requête SQL, sur le même état de la base. Une annulation ou suppression validée après le début de cette lecture sera visible à la lecture suivante ;
 - les tarifs sont associés au couple `(EventId, SectionId)` : deux événements partageant la même salle peuvent avoir des prix et devises différents ;
 - une section sans tarif pour cet événement conserve ses sièges avec `Price` et `Currency` à `null`, même si elle est tarifée pour un autre événement ; un tarif gratuit conserve `Price = 0` ;
 - les résultats sont triés par nom de section, nom de rangée et libellé de siège, avec les identifiants comme départage à chaque niveau. Le tri des libellés est textuel : `"10"` peut précéder `"2"` ;
 - `IsAvailable` vaut temporairement toujours `true`. Ce champ ne garantit ni l'ouverture des ventes ni la réussite d'une future réservation. Le calcul de disponibilité sera ajouté avec les réservations et les achats, sans ajouter de disponibilité globale à `Seat`.
 
-`GetEventSeatsTests` appelle directement le cas d'usage résolu depuis l'injection de dépendances, avec la vraie requête PostgreSQL, sans ajouter d'endpoint HTTP. Les scénarios couvrent les champs des sièges, l'exclusion des autres salles et lieux, les tarifs propres à chaque événement sans doublons, les tarifs gratuits ou absents, les cas retournant `null`, les salles vides, les dates, le tri stable et la valeur temporaire de `IsAvailable`.
+`GetEventSeatsTests` appelle directement le cas d'usage résolu depuis l'injection de dépendances, avec la vraie requête PostgreSQL, sans ajouter d'endpoint HTTP. Les scénarios couvrent les champs des sièges, l'exclusion des autres salles et lieux, les tarifs propres à chaque événement sans doublons, les tarifs gratuits ou absents, les cas retournant `null`, les salles vides, les dates, le tri stable et la valeur temporaire de `IsAvailable`. Un test de régression utilise un contexte de lecture avec un intercepteur EF Core pour annuler l'événement depuis un autre contexte après le début du SELECT : la lecture conserve son résultat cohérent, exécute une seule commande SQL, et une lecture suivante retourne `null`.
 
 Après avoir configuré `BILLETTERIE_TEST_CONNECTION_STRING` comme indiqué plus haut, lancer uniquement ces tests :
 

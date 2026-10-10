@@ -1,7 +1,11 @@
+using System.Data.Common;
 using Billetterie.Application.Events.GetEventSeats;
 using Billetterie.Domain.Events;
 using Billetterie.Domain.Venues;
 using Billetterie.Infrastructure.Persistence;
+using Billetterie.Infrastructure.Persistence.Queries;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Billetterie.IntegrationTests;
@@ -197,6 +201,64 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         Assert.Equal(seats, repeatedSeats);
         Assert.Equal(seats.Count, seats.Select(seat => seat.Id).Distinct().Count());
         Assert.All(seats, seat => Assert.True(seat.IsAvailable));
+    }
+
+    [Fact]
+    public async Task Execute_WhenEventIsCancelledAfterReadStarts_ReturnsConsistentSnapshot()
+    {
+        var venue = CreateVenue();
+        var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
+        var @event = CreateEvent(space.Id);
+        @event.Publish();
+        var section = new Section(Guid.NewGuid(), "Parterre", space.Id);
+        var row = new Row(Guid.NewGuid(), "A", section.Id);
+        var seat = new Seat(Guid.NewGuid(), "01", row.Id);
+        await SaveEntitiesAsync(venue, space, @event, section, row, seat,
+            EventSectionPrice.Create(Guid.NewGuid(), @event, section, 59.99m, "CAD"));
+
+        await using var writeScope = _database.Factory.Services.CreateAsyncScope();
+        var writeContext = writeScope.ServiceProvider.GetRequiredService<BilletterieDbContext>();
+        var interceptor = new CancelEventAfterReadInterceptor(writeContext, @event.Id);
+        var options = new DbContextOptionsBuilder<BilletterieDbContext>()
+            .UseNpgsql(writeContext.Database.GetConnectionString())
+            .AddInterceptors(interceptor)
+            .Options;
+        await using var readContext = new BilletterieDbContext(options);
+        var useCase = new GetEventSeats(new EventSeatQuery(readContext));
+
+        var seats = await useCase.ExecuteAsync(@event.Id);
+
+        // La modification est validée après le début du SELECT, avant sa matérialisation.
+        // Avec AnyAsync suivi de ToListAsync, la seconde lecture renverrait une liste vide.
+        Assert.NotNull(seats);
+        Assert.Equal(ExpectedSeat(seat, row, section, 59.99m, "CAD"), Assert.Single(seats));
+        Assert.Equal(1, interceptor.ReadCount);
+        // Une nouvelle lecture observe bien l'annulation déjà validée.
+        Assert.Null(await GetSeatsAsync(@event.Id));
+    }
+
+    private sealed class CancelEventAfterReadInterceptor(
+        BilletterieDbContext writeContext, Guid eventId) : DbCommandInterceptor
+    {
+        public int ReadCount { get; private set; }
+
+        public override async ValueTask<DbDataReader> ReaderExecutedAsync(
+            DbCommand command,
+            CommandExecutedEventData eventData,
+            DbDataReader result,
+            CancellationToken cancellationToken = default)
+        {
+            ReadCount++;
+            if (ReadCount == 1)
+            {
+                var @event = await writeContext.Events.SingleAsync(
+                    @event => @event.Id == eventId, cancellationToken);
+                @event.Cancel();
+                await writeContext.SaveChangesAsync(cancellationToken);
+            }
+
+            return result;
+        }
     }
 
     private static Venue CreateVenue() =>
