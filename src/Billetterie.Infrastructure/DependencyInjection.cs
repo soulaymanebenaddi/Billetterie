@@ -3,6 +3,7 @@ using Billetterie.Infrastructure.Persistence.Seeding;
 using Billetterie.Infrastructure.Persistence.Queries;
 using Billetterie.Application.Events.GetPublishedEvents;
 using Billetterie.Application.Events.GetEventDetails;
+using Billetterie.Application.Events.GetEventSeats;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,8 @@ public static class DependencyInjection
         services.AddScoped<IEventCatalogQuery, EventCatalogQuery>();
 
         services.AddScoped<IEventDetailsQuery, EventDetailsQuery>();
+
+        services.AddScoped<IEventSeatQuery, EventSeatQuery>();
 
         return services;
     }
