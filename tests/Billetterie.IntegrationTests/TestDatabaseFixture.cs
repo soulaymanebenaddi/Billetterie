@@ -11,12 +11,17 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
 
     public TestDatabaseFixture()
     {
+        
         var connectionString = Environment.GetEnvironmentVariable(
             "BILLETTERIE_TEST_CONNECTION_STRING");
 
         if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException(
-                "Configure BILLETTERIE_TEST_CONNECTION_STRING before running integration tests.");
+        {
+            connectionString = new ConfigurationBuilder()
+                .AddUserSecrets<Program>(optional: true)
+                .Build()
+                .GetConnectionString("TestDatabase");
+        }
 
         var connectionSettings = new NpgsqlConnectionStringBuilder(connectionString);
 

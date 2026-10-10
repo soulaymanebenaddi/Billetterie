@@ -11,6 +11,12 @@ public interface IEventSeatQuery
     /// breaking ties. Returns null when the identifier is unknown or the event is draft or
     /// cancelled, or an empty collection when the published event has no seats.
     /// </returns>
+    /// <remarks>
+    /// Seats without a section price for this event have null Price and Currency;
+    /// a configured free price remains zero. IsAvailable is temporarily always true
+    /// until reservations and purchases are implemented, and does not guarantee
+    /// that a future reservation will succeed or that the event is open for sale.
+    /// </remarks>
     Task<IReadOnlyList<EventSeatDto>?> GetEventSeatsAsync(
         Guid eventId,
         CancellationToken cancellationToken = default);
