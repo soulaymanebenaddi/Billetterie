@@ -1,9 +1,12 @@
 using System.Data.Common;
+using System.Net;
+using System.Text.Json;
 using Billetterie.Application.Events.GetEventSeats;
 using Billetterie.Domain.Events;
 using Billetterie.Domain.Venues;
 using Billetterie.Infrastructure.Persistence;
 using Billetterie.Infrastructure.Persistence.Queries;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,16 +17,22 @@ namespace Billetterie.IntegrationTests;
 public sealed class GetEventSeatsTests : IAsyncLifetime
 {
     private readonly TestDatabaseFixture _database;
+    private readonly HttpClient _client;
 
     public GetEventSeatsTests(TestDatabaseFixture database)
     {
         _database = database;
+        _client = database.Factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost"),
+            AllowAutoRedirect = false
+        });
     }
 
     public Task InitializeAsync() => _database.ResetAsync();
 
     [Fact]
-    public async Task Execute_ReturnsOnlyEventSpaceSeats_WithEventSpecificPrices()
+    public async Task Get_ReturnsOnlyEventSpaceSeats_WithEventSpecificPrices()
     {
         var venue = CreateVenue();
         var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
@@ -65,30 +74,24 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
             EventSectionPrice.Create(Guid.NewGuid(), otherEvent, unpricedSection, 30m, "USD"));
 
         var seats = await GetSeatsAsync(@event.Id);
-        Assert.NotNull(seats);
-        Assert.Equal(new[]
-        {
+        AssertSeats(seats,
             ExpectedSeat(freeSeat, freeRow, freeSection, 0m, "USD"),
             ExpectedSeat(unpricedSeat, unpricedRow, unpricedSection, null, null),
             ExpectedSeat(paidSeat, paidRow, paidSection, 59.99m, "CAD"),
-            ExpectedSeat(secondPaidSeat, paidRow, paidSection, 59.99m, "CAD")
-        }, seats);
+            ExpectedSeat(secondPaidSeat, paidRow, paidSection, 59.99m, "CAD"));
 
         var otherEventSeats = await GetSeatsAsync(otherEvent.Id);
-        Assert.NotNull(otherEventSeats);
-        Assert.Equal(new[]
-        {
+        AssertSeats(otherEventSeats,
             ExpectedSeat(freeSeat, freeRow, freeSection, 20m, "CAD"),
             ExpectedSeat(unpricedSeat, unpricedRow, unpricedSection, 30m, "USD"),
             ExpectedSeat(paidSeat, paidRow, paidSection, 10m, "EUR"),
-            ExpectedSeat(secondPaidSeat, paidRow, paidSection, 10m, "EUR")
-        }, otherEventSeats);
+            ExpectedSeat(secondPaidSeat, paidRow, paidSection, 10m, "EUR"));
     }
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task Execute_WhenIdDoesNotExist_ReturnsNull(bool useEmptyGuid)
+    public async Task Get_WhenIdDoesNotExist_ReturnsNotFound(bool useEmptyGuid)
     {
         var venue = CreateVenue();
         var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
@@ -99,15 +102,16 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         var seat = new Seat(Guid.NewGuid(), "01", row.Id);
         await SaveEntitiesAsync(venue, space, @event, section, row, seat);
 
-        var seats = await GetSeatsAsync(useEmptyGuid ? Guid.Empty : Guid.NewGuid());
+        var unknownId = useEmptyGuid ? Guid.Empty : Guid.NewGuid();
+        using var response = await _client.GetAsync($"/api/events/{unknownId}/seats");
 
-        Assert.Null(seats);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Theory]
     [InlineData(EventStatus.Draft)]
     [InlineData(EventStatus.Cancelled)]
-    public async Task Execute_WhenEventIsNotPublished_ReturnsNull(EventStatus status)
+    public async Task Get_WhenEventIsNotPublished_ReturnsNotFound(EventStatus status)
     {
         var venue = CreateVenue();
         var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
@@ -122,13 +126,25 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         var seat = new Seat(Guid.NewGuid(), "01", row.Id);
         await SaveEntitiesAsync(venue, space, @event, section, row, seat);
 
-        Assert.Null(await GetSeatsAsync(@event.Id));
+        using var response = await _client.GetAsync($"/api/events/{@event.Id}/seats");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("not-a-guid")]
+    [InlineData("123")]
+    public async Task Get_WhenIdIsMalformed_ReturnsBadRequest(string id)
+    {
+        using var response = await _client.GetAsync($"/api/events/{id}/seats");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task Execute_WhenPublishedEventHasNoSeats_ReturnsEmptyList(bool hasRow)
+    public async Task Get_WhenPublishedEventHasNoSeats_ReturnsEmptyArray(bool hasRow)
     {
         var venue = CreateVenue();
         var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
@@ -144,8 +160,7 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
 
         var seats = await GetSeatsAsync(@event.Id);
 
-        Assert.NotNull(seats);
-        Assert.Empty(seats);
+        AssertSeats(seats);
     }
 
     [Theory]
@@ -153,7 +168,7 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-24)]
-    public async Task Execute_WhenPublishedEventIsFutureStartingNowStartedOrEnded_ReturnsSeats(
+    public async Task Get_WhenPublishedEventIsFutureStartingNowStartedOrEnded_ReturnsSeats(
         int startOffsetHours)
     {
         var venue = CreateVenue();
@@ -167,12 +182,11 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
 
         var seats = await GetSeatsAsync(@event.Id);
 
-        Assert.NotNull(seats);
-        Assert.Equal(ExpectedSeat(seat, row, section, null, null), Assert.Single(seats));
+        AssertSeats(seats, ExpectedSeat(seat, row, section, null, null));
     }
 
     [Fact]
-    public async Task Execute_ReturnsSeatsOrderedBySectionRowAndLabel_WithoutDuplicates()
+    public async Task Get_ReturnsSeatsOrderedBySectionRowAndLabel_WithoutDuplicates()
     {
         var venue = CreateVenue();
         var space = new VenueSpace(Guid.NewGuid(), "Salle principale", venue.Id);
@@ -194,13 +208,17 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         var seats = await GetSeatsAsync(@event.Id);
         var repeatedSeats = await GetSeatsAsync(@event.Id);
 
-        Assert.NotNull(seats);
-        Assert.NotNull(repeatedSeats);
-        Assert.Equal(new[] { firstSeat.Id, secondSeat.Id, thirdSeat.Id, fourthSeat.Id },
-            seats.Select(seat => seat.Id));
-        Assert.Equal(seats, repeatedSeats);
-        Assert.Equal(seats.Count, seats.Select(seat => seat.Id).Distinct().Count());
-        Assert.All(seats, seat => Assert.True(seat.IsAvailable));
+        var expectedSeats = new[]
+        {
+            ExpectedSeat(firstSeat, firstRow, firstSection, null, null),
+            ExpectedSeat(secondSeat, firstRow, firstSection, null, null),
+            ExpectedSeat(thirdSeat, lastRow, firstSection, null, null),
+            ExpectedSeat(fourthSeat, otherSectionRow, lastSection, null, null)
+        };
+        AssertSeats(seats, expectedSeats);
+        AssertSeats(repeatedSeats, expectedSeats);
+        Assert.Equal(seats.GetArrayLength(),
+            seats.EnumerateArray().Select(seat => seat.GetProperty("id").GetGuid()).Distinct().Count());
     }
 
     [Fact]
@@ -234,7 +252,7 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         Assert.Equal(ExpectedSeat(seat, row, section, 59.99m, "CAD"), Assert.Single(seats));
         Assert.Equal(1, interceptor.ReadCount);
         // Une nouvelle lecture observe bien l'annulation déjà validée.
-        Assert.Null(await GetSeatsAsync(@event.Id));
+        Assert.Null(await ExecuteGetSeatsAsync(@event.Id));
     }
 
     private sealed class CancelEventAfterReadInterceptor(
@@ -283,7 +301,52 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
     }
 
-    private async Task<IReadOnlyList<EventSeatDto>?> GetSeatsAsync(Guid eventId)
+    private async Task<JsonElement> GetSeatsAsync(Guid eventId)
+    {
+        using var response = await _client.GetAsync($"/api/events/{eventId}/seats");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(JsonValueKind.Array, json.RootElement.ValueKind);
+
+        // Le document est libéré ici ; le clone reste utilisable par les assertions du scénario.
+        return json.RootElement.Clone();
+    }
+
+    private static void AssertSeats(JsonElement seats, params EventSeatDto[] expectedSeats)
+    {
+        Assert.Equal(expectedSeats.Length, seats.GetArrayLength());
+        for (var index = 0; index < expectedSeats.Length; index++)
+        {
+            var item = seats[index];
+            var expected = expectedSeats[index];
+            Assert.Equal(JsonValueKind.Object, item.ValueKind);
+            Assert.Equal(expected.Id, item.GetProperty("id").GetGuid());
+            Assert.Equal(expected.Label, item.GetProperty("label").GetString());
+            Assert.Equal(expected.RowId, item.GetProperty("rowId").GetGuid());
+            Assert.Equal(expected.RowName, item.GetProperty("rowName").GetString());
+            Assert.Equal(expected.SectionId, item.GetProperty("sectionId").GetGuid());
+            Assert.Equal(expected.SectionName, item.GetProperty("sectionName").GetString());
+            if (expected.Price is { } price)
+            {
+                Assert.Equal(price, item.GetProperty("price").GetDecimal());
+            }
+            else
+            {
+                Assert.Equal(JsonValueKind.Null, item.GetProperty("price").ValueKind);
+            }
+
+            Assert.Equal(expected.Currency, item.GetProperty("currency").GetString());
+            if (expected.Currency is null)
+            {
+                Assert.Equal(JsonValueKind.Null, item.GetProperty("currency").ValueKind);
+            }
+
+            Assert.Equal(expected.IsAvailable, item.GetProperty("isAvailable").GetBoolean());
+        }
+    }
+
+    private async Task<IReadOnlyList<EventSeatDto>?> ExecuteGetSeatsAsync(Guid eventId)
     {
         await using var scope = _database.Factory.Services.CreateAsyncScope();
         // Passe par le cas d'usage et la vraie requête enregistrée dans l'injection de dépendances.
@@ -291,5 +354,9 @@ public sealed class GetEventSeatsTests : IAsyncLifetime
         return await useCase.ExecuteAsync(eventId);
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public Task DisposeAsync()
+    {
+        _client.Dispose();
+        return Task.CompletedTask;
+    }
 }

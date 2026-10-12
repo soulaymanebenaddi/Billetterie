@@ -126,7 +126,18 @@ Son contrat est le suivant :
 - les résultats sont triés par nom de section, nom de rangée et libellé de siège, avec les identifiants comme départage à chaque niveau. Le tri des libellés est textuel : `"10"` peut précéder `"2"` ;
 - `IsAvailable` vaut temporairement toujours `true`. Ce champ ne garantit ni l'ouverture des ventes ni la réussite d'une future réservation. Le calcul de disponibilité sera ajouté avec les réservations et les achats, sans ajouter de disponibilité globale à `Seat`.
 
-`GetEventSeatsTests` appelle directement le cas d'usage résolu depuis l'injection de dépendances, avec la vraie requête PostgreSQL, sans ajouter d'endpoint HTTP. Les scénarios couvrent les champs des sièges, l'exclusion des autres salles et lieux, les tarifs propres à chaque événement sans doublons, les tarifs gratuits ou absents, les cas retournant `null`, les salles vides, les dates, le tri stable et la valeur temporaire de `IsAvailable`. Un test de régression utilise un contexte de lecture avec un intercepteur EF Core pour annuler l'événement depuis un autre contexte après le début du SELECT : la lecture conserve son résultat cohérent, exécute une seule commande SQL, et une lecture suivante retourne `null`.
+Les scénarios fonctionnels de `GetEventSeatsTests` appellent `GET /api/events/{id}/seats` avec le `HttpClient` de `WebApplicationFactory` et la vraie requête PostgreSQL. Ils vérifient :
+
+- HTTP `200`, le type de contenu `application/json` et les champs JSON `id`, `label`, `rowId`, `rowName`, `sectionId`, `sectionName`, `price`, `currency` et `isAvailable` ;
+- l'exclusion des sièges des autres salles et lieux, et les tarifs propres à chaque événement partageant une même salle ;
+- les tarifs gratuits égaux à `0` et les tarifs absents avec `price` et `currency` à `null` ;
+- HTTP `404` pour un identifiant inconnu ou vide, ou un événement `Draft` ou `Cancelled` ;
+- HTTP `400` pour un identifiant mal formé ;
+- HTTP `200` avec un tableau JSON vide `[]` lorsque la salle ne contient aucun siège ;
+- la consultation des événements publiés futurs, commençant à l'heure courante, déjà commencés ou terminés ;
+- le tri stable, l'absence de doublons et la valeur provisoire `isAvailable = true`.
+
+Le test de régression de cohérence SQL conserve son appel direct au cas d'usage avec un intercepteur EF Core pour annuler l'événement depuis un autre contexte après le début du SELECT : la lecture conserve son résultat cohérent, exécute une seule commande SQL, et une lecture suivante retourne `null`.
 
 Après avoir configuré `BILLETTERIE_TEST_CONNECTION_STRING` comme indiqué plus haut, lancer uniquement ces tests :
 
