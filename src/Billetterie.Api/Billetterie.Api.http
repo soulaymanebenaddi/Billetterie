@@ -13,3 +13,8 @@ Accept: application/json
 # Un identifiant mal formé retourne HTTP 400.
 GET {{ApiHostAddress}}/api/events/{{EventId}}
 Accept: application/json
+
+
+### Consulter les places d'un événement publié (HTTP 200, même s'il est passé)
+GET {{ApiHostAddress}}/api/events/{{EventId}}/seats
+Accept: application/json
